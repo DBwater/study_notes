@@ -72,7 +72,7 @@ FILENAME|当前输入文件的名字
 
 - 显示含有hello的行的第一列和第二列
 
-`awk '/hello/{print $1,$2}' data.txt
+`awk '/hello/{print $1,$2}' data.txt`
 
 - 更改默认的分列的符号，把空格改为以：号分割每一列,如果指定多个分隔符可以-F[;,.]这样
 
