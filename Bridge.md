@@ -1,0 +1,102 @@
+# 结构型设计模式－桥接模式（Bridge）
+1. 意图：将抽象化与实现化分离，使得二者可以独立地变化。
+2. 适用场景：
+	- 你不希望抽象和他的实现部分之间有一个固定的绑定关系，例如这种情况可能是因为在程序运行的时刻实现部分应该可以被选择或者切换
+	- 类的抽象以及他的实现都应该可以通过生成子类的方法加以扩充。这时Bridge模式使你可以对不同的抽象接口和实现部分进行组合，并分别对他们进行扩充。
+	- 对一个抽象的实现部分的修改应对客户不产生影响，即客户的代码不必重新编译，
+	- 你想对客户完全隐藏抽象的实现部分，在c++中，类的表示在类的接口中是可见的
+	- 你想在多个对象间共享实现（可能使用引用计数），但同时要求客户不知道这一点。
+
+3. UML图：
+![](/home/dbwater/桌面/桥接模式1.x-png)
+
+	抽象基类及接口：
+	- Abstraction::Operation()：定义要实现的操作接口
+	- AbstractionImplement::Operation()：实现抽象类Abstaction所定义操作的接口，由其具体派生类ConcreteImplemenA、ConcreteImplemenA或者其他派生类实现。
+	- 在Abstraction::Operation()中根据不同的指针多态调用AbstractionImplement::Operation()函数。
+
+4. 例子：
+
+	假设我们要一个图形，那么这个图形的形状可能是圆的也可能是正方形的，这个图形的颜色可能是红色的也可能是绿色的。
+	那么我们可以把形状当成abstaction,颜色当成AbstractionImplement，如果还有其他的属性，那么我们就可以把他定义为AbstractionImplement2。
+	具体实现可以看下面的代码
+
+5.　代码实现：
+
+```c++
+#include<iostream>
+using namespace std;
+//AbstractionImplement
+class color{
+public:
+	color(){}
+	~color(){}
+public:
+	virtual void show_color()=0;
+};
+class red:public color{
+public:
+	red(){}
+	~red(){}
+public:
+	void show_color(){cout<<"red"<<endl;}
+};
+class green:public color{
+public:
+	green(){}
+	~green(){}
+public:
+	void show_color(){cout<<"green"<<endl;}
+};
+//abstaction
+class graph{
+public:
+	graph(){}
+	~graph(){}
+public:
+	void select_color(color *op){this->op = op;}
+	void show_color(){op->show_color();}
+	virtual void show_shape(){};
+private:
+	color* op;//这个指针用来控制颜色
+};
+class square:public graph{
+public:
+	square(){}
+	~square(){}
+public:
+	void show_shape(){cout<<"square"<<endl;}
+};
+class circle:public square{
+public:
+	circle(){}
+	~circle(){}
+public:
+	void show_color(){cout<<"circle"<<endl;}
+};
+
+int main(){Bri
+	color* c1= new red();
+	graph* p1 = new square();
+	p1->select_color(c1);
+	p1->show_color();
+	p1->show_shape();
+	cout<<"-----------------------"<<endl;
+	color *c2 = new green();
+	graph* p2 = new circle();
+	p2->select_color(c2);
+	p2->show_color();
+	p2->show_shape();
+}
+
+```
+
+6.　总结：
+优点：
+	- 将实现抽离出来，再实现抽象，使得对象的具体实现依赖于抽象，满足了依赖倒转原则。
+	- 将可以共享的变化部分，抽离出来，减少了代码的重复信息。
+	- 对象的具体实现可以更加灵活，可以满足多个因素变化的要求。
+	- 桥接模式有时类似于多继承方案，但是多继承方案违背了类的单一职责原则 （即一个类只有一个变化的原因），复用性比较差，而且多继承结构中类的个数非常庞大，桥接模式是比多继承方案更好的解决方法。
+    - 桥接模式提高了系统的可扩充性，在两个变化维度中任意扩展一个维度，都不需要修改原有系统。
+	缺点：
+	- 客户必须知道选择哪一种类型的实现bri
