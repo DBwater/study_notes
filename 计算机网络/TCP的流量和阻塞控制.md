@@ -239,7 +239,7 @@ Nagle和Cork算法都是在发送方进行控制，两个算法的着重点不�
 
 
 
-参考:
+**参考:**
 [TCP的阻塞和重传机制](http://www.cnblogs.com/yjf512/p/5680689.html)
 [网络基本功](https://community.emc.com/message/840427#840427)
 [TCP阻塞控制](http://blog.csdn.net/liaoxr/article/details/7015871)
