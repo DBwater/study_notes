@@ -41,7 +41,7 @@ char * strcpy(char *dest,const char *src)
 
 	1. dynamic_cast：该转换符用于将一个指向派生类的基类指针或引用转换为派生类的指针或引用
 	2. const_cast：最常用的用途就是删除const属性；
-	3. static_cas：该操作符用于非多态类型的转换，任何标准转换都可以使用他，即static_cast可以把int转换为double，但不能把两个不相关的类对象进行转换，比如类A不能转换为一个不相关的类B类型。static_cast本质上是传统c语言强制转换的替代品。
+	3. static_cast：该操作符用于非多态类型的转换，任何标准转换都可以使用他，即static_cast可以把int转换为double，但不能把两个不相关的类对象进行转换，比如类A不能转换为一个不相关的类B类型。static_cast本质上是传统c语言强制转换的替代品。
 	4. reinterpret_cast：该操作符用于将一种类型转换为另一种不同的类型，比如可以把一个整型转换为一个指针，或把一个指针转换为一个整型，因此使用该操作符的危险性较高，一般不应使用该操作符。
 
 - **操作符重载（+操作符），具体如何去定义，？（让把操作符重载函数原型说一遍）**
@@ -58,8 +58,24 @@ char * strcpy(char *dest,const char *src)
 		- 当运算符函数是一个成员函数时，最左边的操作数（或者只有最左边的操作数）必须是运算符类的一　个类对象（或者是对该类对象的引用）。如果左边的操作数必须是一个不同类的对象，或者是一个内部　类型的对象，该运算符函数必须作为一个友元函数来实现。
 		- 当需要重载运算符具有可交换性时，选择重载为友元函数。
 
-- **内存对齐的原则？（原则叙述了一下并举例说明**
-  32位按照4字节对齐，64位按照8字节对齐。
+- **内存对齐的原则？**
+	- 对于结构的各个成员，第一个成员位于偏移为0的位置，以后的每个数据成员的偏移量必须是  这个数据成员的自身长度(或者可以自己设置)的倍数。
+	- 结构体作为成员:如果一个结构里有某些结构体成员,则结构体成员要从其内部最大元素大小的整数倍地址开始存储
+	- 结构体的总大小,也就是sizeof的结果,.必须是其内部最大成员的整数倍.不足的要补齐.
+
+```c++
+	typedef struct A{
+		int a;//0~4
+		double b;//根据规则一，偏移量应该为sizeof(double)的倍数；8~15
+		char c;本来应该16~17但是根据规则三，最后补位16~23
+	}A;//所以A的大小应该为24
+	
+	struct B{
+		int id;0~4
+		A a;//规矩规则二,应该为8~31;
+	};
+	//所以最后的大小应该为32
+```
 
 - **模版怎么实现？**
 ```
@@ -67,6 +83,29 @@ template\<typename T>
 中间不能有任何其他定义
 void swap(T a,T b){}
 ```
+
+- **模板的优缺点**
+	优点：
+	- 在一些场景可以避免重复代码
+	- 有些问题难以使用OO技巧（如继承和多态）来实现，而使用模版会很方便
+	- template classes更加的类型安全，因其参数类型在编译时都是已知的。
+	缺点：
+	- 一些编译器对template支持不好。
+	- 编译器给出的有些出错信息比较晦涩。
+	- 为每种类型都生成额外的代码，可能导致生成的exe膨胀。
+	- 使用templates写的代码难以调试
+	- templates在头文件中，这样一旦有所变更需要重编译所有相关工程
+
+- **模版特化的概念，为什么特化?**
+
+	模板有两种特化，全特化和偏特化（局部特化）
+	模板函数只能全特化，没有偏特化（以后可能有）。
+	模板类是可以全特化和偏特化的。
+	全特化，就是模板中模板参数全被指定为确定的类型。
+	全特化也就是定义了一个全新的类型，全特化的类中的函数可以与模板类不一样。
+	偏特化，就是模板中的模板参数没有被全部确定，需要编译器在编译时进行确定。
+	在类型上加上const、&、\*（ cosnt int、int&、int\*、等等）并没有产生新的类型。只是类型被修饰了。模板在编译时，可以得到这些修饰信息。
+
 
 - **指针和const的用法？**
 	- const char *s;
@@ -213,15 +252,6 @@ void swap(T a,T b){}
 		2. 是类的内部实现，属于类定义的一部分。
 		3. 由于不与任何对象相连系，因此不具有this指针。所以，无法访问类对象的非静态数据成员，也无法访问类非静态成员函数，只能访问静态数据成员，调用静态成员函数。
 
-- **模版特化的概念，为什么特化?**
-
-	模板有两种特化，全特化和偏特化（局部特化）
-	模板函数只能全特化，没有偏特化（以后可能有）。
-	模板类是可以全特化和偏特化的。
-	全特化，就是模板中模板参数全被指定为确定的类型。
-	全特化也就是定义了一个全新的类型，全特化的类中的函数可以与模板类不一样。
-	偏特化，就是模板中的模板参数没有被全部确定，需要编译器在编译时进行确定。
-	在类型上加上const、&、\*（ cosnt int、int&、int\*、等等）并没有产生新的类型。只是类型被修饰了。模板在编译时，可以得到这些修饰信息。
 
 - **explicit是干什么用的？**
 
@@ -378,6 +408,62 @@ void swap(T a,T b){}
 	- 自由存储区：就是那些由malloc等分配的内存块，他和堆是十分相似的，不过它是用free来结束自己的生命的。
 	- 全局/静态存储区：全局变量和静态变量被分配到同一块内存中，在以前的C语言中，全局变量又分为初始化的和未初始化的，在C++里面没有这个区分了，他们共同占用同一块内存区。 
 	- 常量区：这是一块比较特殊的存储区，他们里面存放的是常量，不允许修改
+
+**一个简答的string函数**
+```c++
+#include<iostream>
+#include<cstring>
+using std::ostream;
+class string{
+public:
+	string(const char* str);
+	string(const string& str);
+	~string();
+	string& operator=(const string& str);
+	friend ostream& operator<<(ostream& os,const string& str){
+		os<<str.m_str;
+		return os;
+	}
+private:
+	char* m_str;
+};
+//构造函数
+string::string(const char* str){
+	if(str==NULL){
+		m_str=NULL;
+	}
+	else{
+		m_str = new char[strlen(str)+1];//可能需要判断是否new成功，为了减少代码量，不考虑异常
+		memcpy(m_str,str,sizeof(str));
+	}
+}
+//拷贝构造函数
+string::string(const string& str){
+	m_str = new char[strlen(str.m_str)+1];
+	memcpy(m_str,str.m_str,sizeof(str.m_str));
+}
+//拷贝赋值运算符
+string& string::operator= (const string& str){
+	if(this!=&str){
+		if(m_str!=NULL){
+			delete m_str;
+			m_str=NULL;
+		}
+		m_str = new char[strlen(str.m_str)+1];
+		memcpy(m_str,str.m_str,sizeof(str.m_str));
+	}
+	return *this;
+}
+//析构函数
+string::~string(){
+	if(m_str!=NULL){
+		delete m_str;
+		m_str=NULL;
+	}
+}
+
+
+```
 
 
 
