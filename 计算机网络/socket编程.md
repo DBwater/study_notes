@@ -1,6 +1,6 @@
 # socket编程
 
-###select
+### select
 - select是通过设置，检查存放fd标志位的数据结构(相当于数组)来对I/O调用进行处理
 - 进程可以被监视的fd数量被限制，64位最大默认为2048
 >int select(int maxfdp1，fd_set *readfds,，fd_set  *writefds，fd_set *exceptfds， struct timeval *timeout);
@@ -21,17 +21,17 @@ FD_CLR(int, fd_set \*); 将一个给定的文件描述符从集合中删除
 FD_ISSET(int ,fd_set \* )检查集合中指定的文件描述符是否可以读写
 当套接字比较多的时候需要通过遍历DF_SETSIZE个socket来完成调度，不管哪个socket是活跃都需要遍历一遍，这会浪费很多CPU的时间。
 
-###poll
+### poll
 - poll本质和select没有区别，它将用户传入的数组拷贝到内核空间，然后查询每个fd对应的设备状态，如果设备就绪则在设备等待队列中加入一项并继续遍历，如果遍历完所有fd后没有发现就绪设备，则挂起当前进程，直到设备就绪或者主动超时，被唤醒后它又要再次遍历fd。这个过程经历了多次无谓的遍历。
 - poll没有最大连接数的限制，这是因为他是用链表来储存的，并且poll还支持水平触发。
 
-###epoll
+### epoll
 - epoll既支持水平触发也支持边缘触发
 - epoll没有最大并发连接的限制，不会随着f数量增多而效率下降，epoll只管活跃的连接，因此epoll的效率远远高于select和poll。
 - 利用mmap()文件映射内存加速与内核空间的消息传递；即epoll使用mmap减少复制开销。
 > epoll_create(int size)
 
-	创建一个epoll实例，返回新创建的epoll实例，当这个文件描述符不用的时候需要通过close来关闭，当所有epoll实例相关的文件描述符被关闭的时候，实例被销毁。
+创建一个epoll实例，返回新创建的epoll实例，当这个文件描述符不用的时候需要通过close来关闭，当所有epoll实例相关的文件描述符被关闭的时候，实例被销毁。
 > epoll_ctl(int epfd,int op,struct epoll_event *ev)
 
  修改epoll的兴趣列表
@@ -68,7 +68,16 @@ evlist所指向的结构体数组中返回的就是有关就绪态文件描述�
 
 epoll_wait()返回evlist中的元素个数如果在timeout超时就返回0,出错返回-1。
 在多线程中可以在一个线程中使用epoll_clt将文件描述符添加到另一个线程的epollwait所监视的epoll实例中去，也会得到立刻处理，epoll_wait调用将返回 有关新添加的文件描述符的就绪信息。
-**epoll事件:**
----|---|---
+**文件描述符就绪条件**
+
+- 读条件
+	- socket内核接受缓冲区的字节书大于等于其低水位标记SO\_RCVLOWAT,此时可以无阻塞的读该socket,并读操作返回的字节大于０
+	- socket通信的对方关闭连接，此时对socket的读操作返回0
+	- 监听socket上有未处理的错误，此时我们可以工getsockopt来读取和清楚该操作
+-　写条件
+	- socket的内核发送缓冲区中的可用字节大于等于低水位标记，SO\_SNDLOWAT, 此时我们可以无阻塞的写该soceket,并且写操作返回的字节数大于０
+	- socket的写操作被关闭，对写操作，对写操作被关闭的socket执行写操作将会触发一个SIGPIPE信号。
+	- socket使用非阻塞的connet连接成功或者失败之后
+	- sokcet上有未处理的错误的时候
 
 	
