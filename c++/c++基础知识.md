@@ -433,7 +433,7 @@ string::string(const char* str){
 		m_str=NULL;
 	}
 	else{
-		m_str = new char[strlen(str)+1];//可能需要判断是否new成功，为了减少代码量，不考虑异常
+		m_str = new char[strlen(str)+1];//需要判断是否new成功，为了减少代码量，不考虑异常
 		memcpy(m_str,str,sizeof(str));
 	}
 }
