@@ -8,6 +8,11 @@ char * strcpy(char *dest,const char *src)
    return result;
 }
 ```
+返回dst的原始值使函数能够支持链式表达式:strlen(strcpy(strA,strB));
+假如考虑dst和src内存重叠的情况，strcpy该怎么实现
+char s[10]="hello";
+strcpy(s, s+1); //应返回ello，
+strcpy(s+1, s); //应返回hhello，但实际会报错，因为dst与src重叠了，把'\0'覆盖了
 
 - **多态性都有哪些？（静态和动态，然后分别叙述了一下虚函数和函数重载)**
 
