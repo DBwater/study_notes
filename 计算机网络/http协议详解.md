@@ -25,6 +25,7 @@ http的请求包括三个组成部分，分别是：请求行，消息报头，�
 其中 Method表示请求方法；Request-URI是一个统一资源标识符；HTTP-Version表示请求的HTTP协议版本；CRLF表示回车和换行（除了作为结尾的CRLF外，不允许出现单独的CR或LF字符）
 
 **请求方法（所有方法全为大写）：**
+
 请求方法 |意义
 --------|---
 GET     |请求获取Request-URI所标识的资源
@@ -37,7 +38,9 @@ CONNECT |保留将来使用
 OPTIONS |请求查询服务器的性能，或者查询与资源相关的选项和需求
 
 ### 请求报头
+
 请求报头允许客户端向服务器端传递请求的附加信息以及客户端自身的信息。
+
 **常用的请求报头:**
 
 - Accept
@@ -58,7 +61,9 @@ OPTIONS |请求查询服务器的性能，或者查询与资源相关的选项�
 	此处使用缺省端口号80，若指定了端口号，则变成：Host：www.guet.edu.cn:指定端口号
 - User-Agent
 	我们上网登陆论坛的时候，往往会看到一些欢迎信息，其中列出了你的操作系统的名称和版本，你所使用的浏览器的名称和版本，这往往让很多人感到很神奇，实际上，服务器应用程序就是从User-Agent这个请求报头域中获取到这些信息。User-Agent请求报头域允许客户端将它的操作系统、浏览器和其它属性告诉服务器。不过，这个报头域不是必需的，如果我们自己编写一个浏览器，不使用User-Agent请求报头域，那么服务器端就无法得知我们的信息了。
+
 **请求报头举例：**
+
 GET /form.html HTTP/1.1 (CRLF)
 Accept:image/gif,image/x-xbitmap,image/jpeg,application/x-shockwave-flash,application/vnd.ms-excel,application/vnd.ms-powerpoint,application/msword,*/* (CRLF)
 Accept-Language:zh-cn (CRLF)
